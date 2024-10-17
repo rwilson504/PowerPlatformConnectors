@@ -1,0 +1,1981 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "contact": {},
+    "description": "Welcome to the Search API. This guide describes how to use the Search API to programmatically query, filter, and search a catalog. Use this explorer to test API endpoints and search the site's catalog without needing to use the site's client search interface. Common uses cases include rendering features on a map in other tools including ArcGIS Map Viewer, GIS desktop applications, OWSLib, and more.\n\n\n\nThe Search API conforms to the new OGC API - Records specification. For further details including definitions and example use cases, see the <a href=\"https://doc.arcgis.com/en/hub/content/federate-data-with-external-catalogs.htm#GUID-EAF833F8-FADA-4EC7-A1CA-F704DC987362\">web help</a>.",
+    "title": "Hub Search API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/search/v1": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "ArcGIS token to use when accessing the underlying ArcGIS Item that represents the site.",
+            "in": "query",
+            "name": "token",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "ArcGIS Token"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A data object describing the site and its API.",
+            "schema": {
+              "$ref": "#/definitions/OgcApiLandingPageDto"
+            }
+          }
+        },
+        "description": "Provides links to the API definition, conformance statements, and metadata about the dataset.",
+        "operationId": "GetSiteRoot",
+        "summary": "Retrieve site root information"
+      }
+    },
+    "/api/search/v1/catalog": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "ArcGIS token to use when accessing the underlying ArcGIS Item that represents the site.",
+            "in": "query",
+            "name": "token",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "ArcGIS Token"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A data object describing the site and its catalog.",
+            "schema": {
+              "$ref": "#/definitions/Catalog"
+            }
+          }
+        },
+        "description": "Provides information about the site and its catalog of resources and collections.",
+        "operationId": "GetSiteCatalog",
+        "summary": "Retrieve site catalog information"
+      }
+    },
+    "/api/search/v1/collections": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "ArcGIS token to use when accessing the underlying ArcGIS Item that represents the site.",
+            "in": "query",
+            "name": "token",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "ArcGIS Token"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A data object containing a list of site catalog collections.",
+            "schema": {
+              "$ref": "#/definitions/CollectionsResponseDto"
+            }
+          }
+        },
+        "description": "Lists the collections described in the site's catalog.",
+        "operationId": "GetSiteCollections",
+        "summary": "List site catalog collections"
+      }
+    },
+    "/api/search/v1/collections/{collectionId}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Key/id for the desired collection.",
+            "in": "path",
+            "name": "collectionId",
+            "required": true,
+            "type": "string",
+            "x-example": "dataset",
+            "x-ms-summary": "Collection ID"
+          },
+          {
+            "description": "ArcGIS token to use when accessing the underlying ArcGIS Item that represents the site.",
+            "in": "query",
+            "name": "token",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "ArcGIS Token"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A data object describing a site collection.",
+            "schema": {
+              "$ref": "#/definitions/CollectionWithLinksDto"
+            }
+          }
+        },
+        "description": "Retrieves the collection from a site's catalog with a provided ID/key.",
+        "operationId": "GetSiteCollectionFromId",
+        "summary": "Retrieve site collection by ID"
+      }
+    },
+    "/api/search/v1/collections/{collectionId}/aggregations": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Key/id of the collection for which items should be filtered and returned.",
+            "in": "path",
+            "name": "collectionId",
+            "required": true,
+            "type": "string",
+            "x-example": "dataset",
+            "x-ms-summary": "Collection ID"
+          },
+          {
+            "description": "This is an example aggregation expression. More aggregation expressions can be specified by adding additional query parameters, where the name of the parameter is an arbitrary alphabetic aggregation name.",
+            "examples": {
+              "terms": {
+                "summary": "Terms",
+                "value": "terms(fields=(access,tags,source))"
+              }
+            },
+            "in": "query",
+            "name": "exampleAggregationName",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "Example Aggregation Expression"
+          },
+          {
+            "description": "CQL filter expression that can be used to refine the aggregation search.",
+            "examples": {
+              "LessThan": {
+                "summary": "Less Than",
+                "value": "created < 1670531235"
+              },
+              "and": {
+                "summary": "AND",
+                "value": "tags NOT IN (tag1, 'tag2', tag3) AND owner IS NOT NULL"
+              },
+              "betweenAnd": {
+                "summary": "BETWEEN AND",
+                "value": "created BETWEEN 1670531235 AND 1770531235"
+              },
+              "equals": {
+                "summary": "Equals",
+                "value": "type='Feature Service'"
+              },
+              "greaterThan": {
+                "summary": "Greater Than",
+                "value": "created > 1670531235"
+              },
+              "greaterThanOrEquals": {
+                "summary": "Greater Than Or Equals",
+                "value": "created >= 1670531235"
+              },
+              "in": {
+                "summary": "IN",
+                "value": "tags IN (tag1, 'tag2', tag3)"
+              },
+              "lessThanOrEquals": {
+                "summary": "Less Than Or Equals",
+                "value": "created <= 1670531235"
+              },
+              "like": {
+                "summary": "LIKE",
+                "value": "description LIKE 'moby*'"
+              },
+              "not": {
+                "summary": "NOT",
+                "value": "tags NOT IN (tag1, 'tag2', tag3) NOT owner IS NULL"
+              },
+              "notBetweenAnd": {
+                "summary": "NOT BETWEEN AND",
+                "value": "created NOT BETWEEN 1670531235 AND 1770531235"
+              },
+              "notIn": {
+                "summary": "NOT IN",
+                "value": "tags NOT IN (tag1, 'tag2', tag3)"
+              },
+              "notNull": {
+                "summary": "IS NOT NULL",
+                "value": "owner IS NOT NULL"
+              },
+              "null": {
+                "summary": "IS NULL",
+                "value": "source IS NULL"
+              },
+              "or": {
+                "summary": "OR",
+                "value": "tags NOT IN (tag1, 'tag2', tag3) OR owner IS NOT NULL"
+              },
+              "subExpressions": {
+                "summary": "Subexpressions",
+                "value": "((type='Feature Service' AND access=public) OR (type='Web Mapping Application' AND access=shared))"
+              }
+            },
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "Filter Expression"
+          },
+          {
+            "description": "Limit the number of results returned for bucket-based aggregations.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer",
+            "x-ms-summary": "Limit"
+          },
+          {
+            "description": "Token to use when accessing the underlying ArcGIS Item that represents the site.",
+            "in": "query",
+            "name": "token",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "ArcGIS Token"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A response describing requested collection aggregations.",
+            "schema": {
+              "$ref": "#/definitions/OgcItemAggregationResponseDto"
+            }
+          }
+        },
+        "description": "Returns requested aggregations from the specified site catalog collection.",
+        "operationId": "GetAggregations",
+        "summary": "Retrieve collection aggregations"
+      }
+    },
+    "/api/search/v1/collections/{collectionId}/items": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Key/id of the collection for which items should be filtered and returned.",
+            "in": "path",
+            "name": "collectionId",
+            "required": true,
+            "type": "string",
+            "x-example": "dataset",
+            "x-ms-summary": "Collection ID"
+          },
+          {
+            "description": "Boolean flag to get items that are shared to Opendata group.",
+            "in": "query",
+            "name": "openData",
+            "required": false,
+            "type": "string",
+            "x-example": "true",
+            "x-ms-summary": "OpenData Flag"
+          },
+          {
+            "description": "Token to use when accessing the underlying ArcGIS Item that represents the site.",
+            "in": "query",
+            "name": "token",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "ArcGIS Token"
+          },
+          {
+            "description": "Sort results by specific fields. Prefixed by either \"+\" for ascending or \"-\" for descending. If no prefix is provided, \"+\" is assumed.",
+            "in": "query",
+            "name": "sortBy",
+            "required": false,
+            "type": "string",
+            "x-example": "+properties.created",
+            "x-ms-summary": "Sort By"
+          },
+          {
+            "description": "The recordId of resource to return.",
+            "in": "query",
+            "name": "recordId",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "Record ID"
+          },
+          {
+            "description": "The title of resource to return.",
+            "in": "query",
+            "name": "title",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "Title"
+          },
+          {
+            "description": "The type of resource.",
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "Resource Type"
+          },
+          {
+            "description": "The initial index of the results to return, starting at 1.",
+            "in": "query",
+            "minimum": 1,
+            "name": "startindex",
+            "required": false,
+            "type": "integer",
+            "x-ms-summary": "Start Index"
+          },
+          {
+            "description": "The number of results to return.",
+            "in": "query",
+            "maximum": 100,
+            "minimum": 0,
+            "name": "limit",
+            "required": false,
+            "type": "integer",
+            "x-ms-summary": "Limit"
+          },
+          {
+            "description": "Query parameter that represents a parse-able string of filter expressions, structured according to the Common Query Language Specification of the OGC Features API. If filter values must include whitespace, try wrapping the value in single quotes.",
+            "examples": {
+              "LessThan": {
+                "summary": "Less Than",
+                "value": "created < 1670531235"
+              },
+              "and": {
+                "summary": "AND",
+                "value": "tags NOT IN (tag1, 'tag2', tag3) AND owner IS NOT NULL"
+              },
+              "betweenAnd": {
+                "summary": "BETWEEN AND",
+                "value": "created BETWEEN 1670531235 AND 1770531235"
+              },
+              "equals": {
+                "summary": "Equals",
+                "value": "type='Feature Service'"
+              },
+              "greaterThan": {
+                "summary": "Greater Than",
+                "value": "created > 1670531235"
+              },
+              "greaterThanOrEquals": {
+                "summary": "Greater Than Or Equals",
+                "value": "created >= 1670531235"
+              },
+              "in": {
+                "summary": "IN",
+                "value": "tags IN (tag1, 'tag2', tag3)"
+              },
+              "lessThanOrEquals": {
+                "summary": "Less Than Or Equals",
+                "value": "created <= 1670531235"
+              },
+              "like": {
+                "summary": "LIKE",
+                "value": "description LIKE 'moby*'"
+              },
+              "not": {
+                "summary": "NOT",
+                "value": "tags NOT IN (tag1, 'tag2', tag3) NOT owner IS NULL"
+              },
+              "notBetweenAnd": {
+                "summary": "NOT BETWEEN AND",
+                "value": "created NOT BETWEEN 1670531235 AND 1770531235"
+              },
+              "notIn": {
+                "summary": "NOT IN",
+                "value": "tags NOT IN (tag1, 'tag2', tag3)"
+              },
+              "notNull": {
+                "summary": "IS NOT NULL",
+                "value": "owner IS NOT NULL"
+              },
+              "null": {
+                "summary": "IS NULL",
+                "value": "source IS NULL"
+              },
+              "or": {
+                "summary": "OR",
+                "value": "tags NOT IN (tag1, 'tag2', tag3) OR owner IS NOT NULL"
+              },
+              "subExpressions": {
+                "summary": "Subexpressions",
+                "value": "((type='Feature Service' AND access=public) OR (type='Web Mapping Application' AND access=shared))"
+              }
+            },
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "Filter Expression"
+          },
+          {
+            "description": "A bbox filter, must be 4 comma-separated coordinates.",
+            "in": "query",
+            "name": "bbox",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "Bounding Box"
+          },
+          {
+            "description": "A general text search filter.",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "Search Query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A FeatureCollection object describing items (in GeoJSON) returned when searching the provided collection.",
+            "schema": {
+              "$ref": "#/definitions/OgcItemResponseDto"
+            }
+          }
+        },
+        "description": "Returns items from the specified site catalog collection that match specified filters.",
+        "operationId": "GetSiteCollectionItems",
+        "summary": "Retrieve items from site collection"
+      }
+    },
+    "/api/search/v1/collections/{collectionId}/items/{itemId}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "collectionId",
+            "required": true,
+            "type": "string",
+            "x-example": "dataset",
+            "x-ms-summary": "Collection ID",
+            "description": "ID of the collection containing the item."
+          },
+          {
+            "in": "path",
+            "name": "itemId",
+            "required": true,
+            "type": "string",
+            "x-ms-summary": "Item ID",
+            "description": "ID of the item to retrieve."
+          },
+          {
+            "in": "query",
+            "name": "token",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "Authentication Token",
+            "description": "Token for use in authentication/authorization"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A data object representing the item details.",
+            "schema": {
+              "$ref": "#/definitions/OgcItemDto"
+            }
+          }
+        },
+        "operationId": "GetSiteCollectionItemById",
+        "summary": "Retrieve item by ID from site collection"
+      }
+    },
+    "/api/search/v1/collections/{collectionId}/queryables": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Key/id of the collection for which queryables should be obtained.",
+            "in": "path",
+            "name": "collectionId",
+            "required": true,
+            "type": "string",
+            "x-example": "dataset",
+            "x-ms-summary": "Collection ID"
+          },
+          {
+            "description": "ArcGIS token to use when accessing the underlying ArcGIS Item that represents the site.",
+            "in": "query",
+            "name": "token",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "ArcGIS Token"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A data object describing the core queryable fields of a site catalog collection.",
+            "schema": {
+              "$ref": "#/definitions/OgcQueryablesResponseDto"
+            }
+          }
+        },
+        "description": "Lists the minimal item properties expected to be returned when searching items in the specified collection.",
+        "operationId": "GetSiteCollectionQueryables",
+        "summary": "List site collection queryables"
+      }
+    },
+    "/api/search/v1/conformance": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "ArcGIS token to use when accessing the underlying ArcGIS Item that represents the site.",
+            "in": "query",
+            "name": "token",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "ArcGIS Token"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A data object describing the conformance specifications the API meets.",
+            "schema": {
+              "$ref": "#/definitions/OgcApiConformancePageDto"
+            }
+          }
+        },
+        "description": "Returns the conformance specifications the API meets.",
+        "operationId": "GetApiConformance",
+        "summary": "Retrieve API conformance"
+      }
+    },
+    "/sharing/rest/content/items/{itemId}": {
+    "get": {
+      "produces": [
+        "application/json"
+      ],
+      "parameters": [
+        {
+          "description": "The unique identifier of the item to be retrieved.",
+          "in": "path",
+          "name": "itemId",
+          "required": true,
+          "type": "string",
+          "x-example": "10ba62fe50864339a8a3e0f18ca85506",
+          "x-ms-summary": "Item ID"
+        },
+        {
+          "description": "The response format. The default format is HTML.",
+          "in": "query",
+          "name": "f",
+          "required": false,
+          "type": "string",
+          "enum": ["html", "json", "pjson"],
+          "x-ms-summary": "Response Format"
+        },
+        {
+          "description": "ArcGIS token to use when accessing the underlying ArcGIS Item.",
+          "in": "query",
+          "name": "token",
+          "required": false,
+          "type": "string",
+          "x-ms-summary": "ArcGIS Token"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "A JSON object representing the item details.",
+          "schema": {
+            "$ref": "#/definitions/ItemResponseDto"
+          }
+        }
+      },
+      "description": "Retrieves the details of an individual item based on the specified item ID.",
+      "operationId": "GetItemById",
+      "summary": "Retrieve item details by ID"
+    },
+    "/content/items/{itemId}/data": {
+    "get": {
+      "produces": [
+        "application/json",
+        "application/octet-stream"
+      ],
+      "parameters": [
+        {
+          "description": "The unique identifier of the item whose data is to be retrieved.",
+          "in": "path",
+          "name": "itemId",
+          "required": true,
+          "type": "string",
+          "x-example": "af01df44bf36437fa8daed01407138ab",
+          "x-ms-summary": "Item ID"
+        },
+        {
+          "description": "Optional output format parameter. Only applies to Package types. Use 'zip' to download a package in Zip format.",
+          "in": "query",
+          "name": "f",
+          "required": false,
+          "type": "string",
+          "enum": ["zip", "unchanged"],
+          "x-ms-summary": "Output Format"
+        },
+        {
+          "description": "ArcGIS token to use when accessing the underlying ArcGIS Item.",
+          "in": "query",
+          "name": "token",
+          "required": false,
+          "type": "string",
+          "x-ms-summary": "ArcGIS Token"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The actual data of the item streamed to the client.",
+          "schema": {
+            "$ref": "#/definitions/ItemDataResponseDto"
+          }
+        }
+      },
+      "description": "Streams the actual data represented by the item to the client, with the content type derived from the item file's mime type.",
+      "operationId": "GetItemData",
+      "summary": "Retrieve item data"
+    },
+    "/{serviceName}/FeatureServer/query": {
+    "get": {
+      "produces": [
+        "application/json",
+        "text/html"
+      ],
+      "parameters": [
+        {
+          "description": "The name of the service to query.",
+          "in": "path",
+          "name": "serviceName",
+          "required": true,
+          "type": "string",
+          "x-example": "PoolPermits",
+          "x-ms-summary": "Service Name"
+        },
+        {
+          "description": "Layer definitions to filter features of individual layers.",
+          "in": "query",
+          "name": "layerDefs",
+          "required": false,
+          "type": "string",
+          "x-ms-summary": "Layer Definitions"
+        },
+        {
+          "description": "The geometry to apply as the spatial filter.",
+          "in": "query",
+          "name": "geometry",
+          "required": false,
+          "type": "string",
+          "x-ms-summary": "Geometry"
+        },
+        {
+          "description": "The type of geometry specified by the geometry parameter.",
+          "in": "query",
+          "name": "geometryType",
+          "required": false,
+          "type": "string",
+          "enum": ["esriGeometryPoint", "esriGeometryMultipoint", "esriGeometryPolyline", "esriGeometryPolygon", "esriGeometryEnvelope"],
+          "x-ms-summary": "Geometry Type"
+        },
+        {
+          "description": "The spatial reference of the input geometry.",
+          "in": "query",
+          "name": "inSR",
+          "required": false,
+          "type": "string",
+          "x-ms-summary": "Input Spatial Reference"
+        },
+        {
+          "description": "The spatial relationship to be applied to the input geometry while performing the query.",
+          "in": "query",
+          "name": "spatialRel",
+          "required": false,
+          "type": "string",
+          "enum": ["esriSpatialRelIntersects", "esriSpatialRelContains", "esriSpatialRelCrosses", "esriSpatialRelEnvelopeIntersects", "esriSpatialRelIndexIntersects", "esriSpatialRelOverlaps", "esriSpatialRelTouches", "esriSpatialRelWithin", "esriSpatialRelRelation"],
+          "x-ms-summary": "Spatial Relationship"
+        },
+        {
+          "description": "The time instant or the time extent to query.",
+          "in": "query",
+          "name": "time",
+          "required": false,
+          "type": "string",
+          "x-ms-summary": "Time"
+        },
+        {
+          "description": "The spatial reference of the returned geometry.",
+          "in": "query",
+          "name": "outSR",
+          "required": false,
+          "type": "string",
+          "x-ms-summary": "Output Spatial Reference"
+        },
+        {
+          "description": "The geodatabase version to query.",
+          "in": "query",
+          "name": "gdbVersion",
+          "required": false,
+          "type": "string",
+          "x-ms-summary": "Geodatabase Version"
+        },
+        {
+          "description": "The historic moment to query.",
+          "in": "query",
+          "name": "historicMoment",
+          "required": false,
+          "type": "integer",
+          "x-ms-summary": "Historic Moment"
+        },
+        {
+          "description": "Indicates whether to return the geometry associated with each feature.",
+          "in": "query",
+          "name": "returnGeometry",
+          "required": false,
+          "type": "boolean",
+          "x-ms-summary": "Return Geometry"
+        },
+        {
+          "description": "Specifies the maximum allowable offset for generalizing geometries returned by the query operation.",
+          "in": "query",
+          "name": "maxAllowableOffset",
+          "required": false,
+          "type": "number",
+          "x-ms-summary": "Max Allowable Offset"
+        },
+        {
+          "description": "If true, only includes an array of object IDs in the response.",
+          "in": "query",
+          "name": "returnIdsOnly",
+          "required": false,
+          "type": "boolean",
+          "x-ms-summary": "Return IDs Only"
+        },
+        {
+          "description": "If true, only includes the count of features returned by the query.",
+          "in": "query",
+          "name": "returnCountOnly",
+          "required": false,
+          "type": "boolean",
+          "x-ms-summary": "Return Count Only"
+        },
+        {
+          "description": "If true, z-values are included in the results.",
+          "in": "query",
+          "name": "returnZ",
+          "required": false,
+          "type": "boolean",
+          "x-ms-summary": "Return Z Values"
+        },
+        {
+          "description": "If true, m-values are included in the results.",
+          "in": "query",
+          "name": "returnM",
+          "required": false,
+          "type": "boolean",
+          "x-ms-summary": "Return M Values"
+        },
+        {
+          "description": "The number of decimal places in the response geometries.",
+          "in": "query",
+          "name": "geometryPrecision",
+          "required": false,
+          "type": "integer",
+          "x-ms-summary": "Geometry Precision"
+        },
+        {
+          "description": "Specifies how the geometry of a multipatch feature will be returned.",
+          "in": "query",
+          "name": "multipatchOption",
+          "required": false,
+          "type": "string",
+          "enum": ["xyFootprint", "stripMaterials", "embedMaterials", "externalizeTextures"],
+          "x-ms-summary": "Multipatch Option"
+        },
+        {
+          "description": "Indicates whether to return true curves in output geometries.",
+          "in": "query",
+          "name": "returnTrueCurves",
+          "required": false,
+          "type": "boolean",
+          "x-ms-summary": "Return True Curves"
+        },
+        {
+          "description": "Specifies the SQL format to be used for the query.",
+          "in": "query",
+          "name": "sqlFormat",
+          "required": false,
+          "type": "string",
+          "enum": ["none", "standard", "native"],
+          "x-ms-summary": "SQL Format"
+        },
+        {
+          "description": "Indicates if the client can work with non-UTC date values.",
+          "in": "query",
+          "name": "timeReferenceUnknownClient",
+          "required": false,
+          "type": "boolean",
+          "x-ms-summary": "Time Reference Unknown Client"
+        },
+        {
+          "description": "The response format. The default is HTML.",
+          "in": "query",
+          "name": "f",
+          "required": false,
+          "type": "string",
+          "enum": ["html", "json"],
+          "x-ms-summary": "Response Format"
+        },
+        {
+          "description": "ArcGIS token to use when accessing the feature service.",
+          "in": "query",
+          "name": "token",
+          "required": false,
+          "type": "string",
+          "x-ms-summary": "ArcGIS Token"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The response containing the results of the query operation.",
+          "schema": {
+            "$ref": "#/definitions/QueryResponseDto"
+          }
+        }
+      },
+      "description": "Queries a feature service and returns either a feature set, a count of features, or an array of feature IDs depending on the query parameters.",
+      "operationId": "QueryFeatureService",
+      "summary": "Query feature service"
+    }
+  },
+  "definitions": {
+    "Catalog": {
+      "properties": {},
+      "type": "object"
+    },
+    "CollectionDto": {
+      "properties": {
+        "crs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "description": {
+          "example": "Collection description",
+          "type": "string"
+        },
+        "filters": {
+          "items": {
+            "$ref": "#/definitions/ItemSearchFiltersBlockDto"
+          },
+          "type": "array"
+        },
+        "id": {
+          "example": "12345",
+          "type": "string"
+        },
+        "itemType": {
+          "type": "string"
+        },
+        "title": {
+          "example": "Collection Title",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "Collection"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "title",
+        "description",
+        "itemType",
+        "crs"
+      ],
+      "type": "object"
+    },
+    "CollectionDtoLink": {
+      "properties": {
+        "href": {
+          "type": "string"
+        },
+        "hreflang": {
+          "type": "string"
+        },
+        "rel": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "rel",
+        "type",
+        "title",
+        "href",
+        "hreflang"
+      ],
+      "type": "object"
+    },
+    "CollectionWithLinksDto": {
+      "properties": {
+        "crs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "description": {
+          "example": "Collection description",
+          "type": "string"
+        },
+        "filters": {
+          "items": {
+            "$ref": "#/definitions/ItemSearchFiltersBlockDto"
+          },
+          "type": "array"
+        },
+        "id": {
+          "example": "12345",
+          "type": "string"
+        },
+        "itemType": {
+          "type": "string"
+        },
+        "links": {
+          "items": {
+            "$ref": "#/definitions/CollectionDtoLink"
+          },
+          "type": "array"
+        },
+        "title": {
+          "example": "Collection Title",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "Collection"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "title",
+        "description",
+        "itemType",
+        "crs",
+        "links"
+      ],
+      "type": "object"
+    },
+    "CollectionsResponseDto": {
+      "properties": {
+        "collections": {
+          "items": {
+            "$ref": "#/definitions/CollectionDto"
+          },
+          "type": "array"
+        },
+        "links": {
+          "items": {
+            "$ref": "#/definitions/CollectionsResponseLinksDto"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "collections",
+        "links"
+      ],
+      "type": "object"
+    },
+    "CollectionsResponseLinksDto": {
+      "properties": {
+        "href": {
+          "type": "string"
+        },
+        "rel": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "rel",
+        "type",
+        "title",
+        "href"
+      ],
+      "type": "object"
+    },
+    "DiscussionSummary": {
+      "properties": {
+        "numberConsidered": {
+          "description": "The total number of matching discussion posts that were considered for summarization",
+          "title": "numberConsidered",
+          "type": "number"
+        },
+        "numberErrored": {
+          "description": "The total number of matching discussion posts considered for summarization, but not included due to errors",
+          "title": "numberErrored",
+          "type": "number"
+        },
+        "numberMatched": {
+          "description": "The total number of discussion posts that matched the search criteria (up to 10000)",
+          "title": "numberMatched",
+          "type": "number"
+        },
+        "numberSummarized": {
+          "description": "The total number of matching discussion posts that were successfully used for summarization",
+          "title": "numberSummarized",
+          "type": "number"
+        },
+        "text": {
+          "description": "The text of the discussion post summary",
+          "title": "text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "numberMatched",
+        "numberConsidered",
+        "numberSummarized",
+        "numberErrored"
+      ],
+      "type": "object"
+    },
+    "DiscussionSummaryLink": {
+      "properties": {
+        "href": {
+          "title": "href",
+          "type": "string"
+        },
+        "rel": {
+          "title": "rel",
+          "type": "string"
+        },
+        "title": {
+          "title": "title",
+          "type": "string"
+        },
+        "type": {
+          "title": "type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "rel",
+        "title",
+        "href"
+      ],
+      "type": "object"
+    },
+    "DiscussionSummaryResponseDto": {
+      "properties": {
+        "links": {
+          "items": {
+            "$ref": "#/definitions/DiscussionSummaryLink"
+          },
+          "title": "links",
+          "type": "array"
+        },
+        "summary": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/DiscussionSummary"
+            }
+          ],
+          "title": "summary"
+        },
+        "timestamp": {
+          "title": "timestamp",
+          "type": "string"
+        }
+      },
+      "required": [
+        "summary",
+        "timestamp",
+        "links"
+      ],
+      "type": "object"
+    },
+    "EnvelopeDto": {
+      "properties": {
+        "bbox": {
+          "items": {
+            "type": "number"
+          },
+          "minItems": 4,
+          "type": "array"
+        },
+        "coordinates": {
+          "description": "Coordinates in either 2d bbox [xmin,ymin,xmax,ymax] or envelope [[xmin,ymax],[xmax,ymin]] formats",
+          "items": {
+            "type": "string"
+          }
+        },
+        "type": {
+          "description": "Type of geometry filter, must be \"Envelope\"",
+          "enum": [
+            "Envelope"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "coordinates"
+      ],
+      "type": "object"
+    },
+    "GeometryDto": {
+      "properties": {
+        "bbox": {
+          "items": {
+            "type": "number"
+          },
+          "minItems": 4,
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "GeometryFilterDto": {
+      "properties": {
+        "geometry": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/GeometryDto"
+            }
+          ]
+        },
+        "relation": {
+          "description": "Type of relation, defaults to \"intersects\"",
+          "enum": [
+            "intersects",
+            "disjoint",
+            "within",
+            "contains"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "geometry"
+      ],
+      "type": "object"
+    },
+    "ItemSearchFiltersBlockDto": {
+      "properties": {
+        "operation": {
+          "default": "AND",
+          "enum": [
+            "AND",
+            "OR"
+          ],
+          "type": "string"
+        },
+        "predicates": {
+          "items": {
+            "$ref": "#/definitions/ItemSearchFiltersDto"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "predicates"
+      ],
+      "type": "object"
+    },
+    "ItemSearchFiltersDto": {
+      "properties": {
+        "tags": {
+          "example": [
+            "tag 1",
+            "tag 2"
+          ]
+        },
+        "access": {
+          "example": [
+            "public",
+            "private"
+          ]
+        },
+        "accessinformation": {
+          "example": {
+            "all": [
+              "all",
+              "here",
+              "must match"
+            ],
+            "any": [
+              "any",
+              "here",
+              "must match"
+            ],
+            "exact": [
+              "all",
+              "here",
+              "must match exactly"
+            ],
+            "not": [
+              "none",
+              "here",
+              "must match"
+            ]
+          }
+        },
+        "boundary": {
+          "$ref": "#/definitions/GeometryFilterDto"
+        },
+        "categories": {
+          "example": "category test"
+        },
+        "created": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/RangeParamsEpoch"
+            }
+          ],
+          "description": "a date range",
+          "example": {
+            "from": 160000000,
+            "to": 170000000
+          }
+        },
+        "culture": {
+          "example": {
+            "all": [
+              "all",
+              "here",
+              "must match"
+            ],
+            "any": [
+              "any",
+              "here",
+              "must match"
+            ],
+            "exact": [
+              "all",
+              "here",
+              "must match exactly"
+            ],
+            "not": [
+              "none",
+              "here",
+              "must match"
+            ]
+          }
+        },
+        "description": {
+          "example": {
+            "all": [
+              "all",
+              "here",
+              "must match"
+            ],
+            "any": [
+              "any",
+              "here",
+              "must match"
+            ],
+            "exact": [
+              "all",
+              "here",
+              "must match exactly"
+            ],
+            "not": [
+              "none",
+              "here",
+              "must match"
+            ]
+          }
+        },
+        "group": {},
+        "id": {},
+        "modified": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/RangeParamsEpoch"
+            }
+          ],
+          "description": "a date range",
+          "example": {
+            "from": 160000000,
+            "to": 170000000
+          }
+        },
+        "orgid": {},
+        "owner": {
+          "example": "dev_bas_hub_admin"
+        },
+        "snippet": {
+          "example": "a test snippet"
+        },
+        "term": {
+          "example": {
+            "all": [
+              "all",
+              "here",
+              "must match"
+            ],
+            "any": [
+              "any",
+              "here",
+              "must match"
+            ],
+            "exact": [
+              "all",
+              "here",
+              "must match exactly"
+            ],
+            "not": [
+              "none",
+              "here",
+              "must match"
+            ]
+          }
+        },
+        "title": {
+          "example": {
+            "all": [
+              "all",
+              "here",
+              "must match"
+            ],
+            "any": [
+              "any",
+              "here",
+              "must match"
+            ],
+            "exact": [
+              "all",
+              "here",
+              "must match exactly"
+            ],
+            "not": [
+              "none",
+              "here",
+              "must match"
+            ]
+          }
+        },
+        "type": {
+          "example": [
+            "Feature Service",
+            "Microsoft Excel"
+          ]
+        },
+        "typekeywords": {
+          "example": "HubProject"
+        }
+      },
+      "type": "object"
+    },
+    "OgcApiConformancePageDto": {
+      "properties": {
+        "conformsTo": {
+          "description": "Array of links to conformance specifications that API conforms to",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "links": {
+          "description": "API links",
+          "items": {
+            "$ref": "#/definitions/OgcApiConformancePageLinkDto"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "conformsTo",
+        "links"
+      ],
+      "type": "object"
+    },
+    "OgcApiConformancePageLinkDto": {
+      "properties": {
+        "href": {
+          "description": "link uri",
+          "type": "string"
+        },
+        "hreflang": {
+          "description": "link uri",
+          "type": "string"
+        },
+        "rel": {
+          "description": "relationship",
+          "type": "string"
+        },
+        "title": {
+          "description": "link title",
+          "type": "string"
+        },
+        "type": {
+          "description": "link MIME type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "rel",
+        "type",
+        "title",
+        "href"
+      ],
+      "type": "object"
+    },
+    "OgcApiLandingPageDto": {
+      "properties": {
+        "description": {
+          "description": "API description",
+          "type": "string"
+        },
+        "item": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/OgcItemDto"
+            }
+          ],
+          "description": "OGC Record of underlying API Resource"
+        },
+        "links": {
+          "description": "API links",
+          "items": {
+            "$ref": "#/definitions/OgcApiLandingPageLinkDto"
+          },
+          "type": "array"
+        },
+        "title": {
+          "description": "API title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "description",
+        "links"
+      ],
+      "type": "object"
+    },
+    "OgcApiLandingPageLinkDto": {
+      "properties": {
+        "href": {
+          "description": "link uri",
+          "type": "string"
+        },
+        "rel": {
+          "description": "relationship",
+          "type": "string"
+        },
+        "title": {
+          "description": "link title",
+          "type": "string"
+        },
+        "type": {
+          "description": "link MIME type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "rel",
+        "type",
+        "title",
+        "href"
+      ],
+      "type": "object"
+    },
+    "OgcItemAggregationLinkDto": {
+      "properties": {
+        "href": {
+          "title": "href",
+          "type": "string"
+        },
+        "rel": {
+          "title": "rel",
+          "type": "string"
+        },
+        "title": {
+          "title": "title",
+          "type": "string"
+        },
+        "type": {
+          "title": "type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "rel",
+        "title",
+        "href"
+      ],
+      "type": "object"
+    },
+    "OgcItemAggregationResponseDto": {
+      "properties": {
+        "aggregations": {
+          "title": "aggregations",
+          "type": "object"
+        },
+        "links": {
+          "items": {
+            "$ref": "#/definitions/OgcItemAggregationLinkDto"
+          },
+          "title": "links",
+          "type": "array"
+        },
+        "timestamp": {
+          "format": "date-time",
+          "title": "timestamp",
+          "type": "string"
+        }
+      },
+      "required": [
+        "timestamp",
+        "aggregations",
+        "links"
+      ],
+      "type": "object"
+    },
+    "OgcItemDto": {
+      "properties": {
+        "geometry": {
+          "title": "geometry"
+        },
+        "id": {
+          "title": "id",
+          "type": "string"
+        },
+        "properties": {
+          "title": "properties",
+          "type": "object"
+        },
+        "time": {
+          "title": "time",
+          "type": "object"
+        },
+        "type": {
+          "enum": [
+            "Feature"
+          ],
+          "title": "type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "geometry",
+        "properties",
+        "time"
+      ],
+      "type": "object"
+    },
+    "OgcItemResponseDto": {
+      "properties": {
+        "features": {
+          "items": {
+            "$ref": "#/definitions/OgcItemDto"
+          },
+          "title": "features",
+          "type": "array"
+        },
+        "numberMatched": {
+          "title": "numberMatched",
+          "type": "number"
+        },
+        "numberReturned": {
+          "title": "numberReturned",
+          "type": "number"
+        },
+        "timestamp": {
+          "format": "date-time",
+          "title": "timestamp",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "FeatureCollection"
+          ],
+          "title": "type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "timestamp",
+        "numberReturned",
+        "numberMatched",
+        "features"
+      ],
+      "type": "object"
+    },
+    "OgcQueryablesResponseDto": {
+      "properties": {
+        "$id": {
+          "type": "string"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "properties": {
+          "properties": {
+            "geometry": {
+              "description": "geometry of the underlying resource",
+              "title": "geometry",
+              "type": "object"
+            },
+            "recordId": {
+              "description": "id of the record",
+              "title": "recordId",
+              "type": "string"
+            },
+            "title": {
+              "description": "the title of the underlying resource",
+              "title": "title",
+              "type": "string"
+            },
+            "type": {
+              "description": "the type of the underlying resource",
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "object"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "title",
+        "$schema",
+        "properties"
+      ],
+      "type": "object"
+    },
+    "RangeParamsEpoch": {
+      "properties": {
+        "from": {
+          "description": "epoch time in milliseconds",
+          "example": 160000000,
+          "type": "number"
+        },
+        "to": {
+          "description": "epoch time in milliseconds",
+          "example": 170000000,
+          "type": "number"
+        }
+      },
+      "required": [
+        "from",
+        "to"
+      ],
+      "type": "object"
+    },
+    "ItemResponseDto": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "x-ms-summary": "Item ID",
+          "description": "The unique ID for this item."
+        },
+        "owner": {
+          "type": "string",
+          "x-ms-summary": "Owner",
+          "description": "The username of the user who owns this item."
+        },
+        "created": {
+          "type": "integer",
+          "x-ms-summary": "Created Date",
+          "description": "The date the item was created, shown in UNIX time in milliseconds."
+        },
+        "modified": {
+          "type": "integer",
+          "x-ms-summary": "Modified Date",
+          "description": "The date the item was last modified, shown in UNIX time in milliseconds."
+        },
+        "name": {
+          "type": "string",
+          "x-ms-summary": "File Name",
+          "description": "The file name of the item for file types. Read-only."
+        },
+        "title": {
+          "type": "string",
+          "x-ms-summary": "Title",
+          "description": "The title of the item displayed to users."
+        },
+        "type": {
+          "type": "string",
+          "x-ms-summary": "Content Type",
+          "description": "The GIS content type of this item (e.g., Web Map, Map Service)."
+        },
+        "typeKeywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-ms-summary": "Type Keywords",
+          "description": "An array of keywords that describe the type of this item."
+        },
+        "description": {
+          "type": "string",
+          "x-ms-summary": "Description",
+          "description": "A detailed description of the item."
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-ms-summary": "Tags",
+          "description": "An array of user-defined tags that describe the item."
+        },
+        "snippet": {
+          "type": "string",
+          "x-ms-summary": "Snippet",
+          "description": "A short summary description of the item."
+        },
+        "thumbnail": {
+          "type": "string",
+          "x-ms-summary": "Thumbnail URL",
+          "description": "The URL to the thumbnail used for the item."
+        },
+        "extent": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "x-ms-summary": "Extent",
+          "description": "An array defining the bounding rectangle of the item in WGS84."
+        },
+        "spatialReference": {
+          "type": "string",
+          "x-ms-summary": "Spatial Reference",
+          "description": "The coordinate system of the item."
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-ms-summary": "Categories",
+          "description": "An array of organization categories set on the item."
+        },
+        "accessInformation": {
+          "type": "string",
+          "x-ms-summary": "Access Information",
+          "description": "Information on the source of the item and its copyright status."
+        },
+        "licenseInfo": {
+          "type": "string",
+          "x-ms-summary": "License Info",
+          "description": "Any license information or restrictions."
+        },
+        "culture": {
+          "type": "string",
+          "x-ms-summary": "Culture",
+          "description": "The item locale information (language and country)."
+        },
+        "url": {
+          "type": "string",
+          "x-ms-summary": "URL",
+          "description": "The URL for the resource represented by the item."
+        },
+        "proxyFilter": {
+          "type": "object",
+          "x-ms-summary": "Proxy Filter",
+          "description": "A JSON object used to restrict service item response results based on specified filters."
+        },
+        "access": {
+          "type": "string",
+          "x-ms-summary": "Access Level",
+          "description": "Indicates the level of access to the item.",
+          "enum": ["private", "shared", "org", "public"]
+        },
+        "size": {
+          "type": "integer",
+          "x-ms-summary": "Size",
+          "description": "The size of the item in bytes."
+        },
+        "properties": {
+          "type": "object",
+          "x-ms-summary": "Properties",
+          "description": "A JSON object that contains additional item properties."
+        },
+        "appCategories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-ms-summary": "App Categories",
+          "description": "An array of categories that apply to the application item."
+        },
+        "industries": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-ms-summary": "Industries",
+          "description": "An array of industries associated with the application."
+        },
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-ms-summary": "Languages",
+          "description": "An array of languages associated with the application."
+        },
+        "largeThumbnail": {
+          "type": "string",
+          "x-ms-summary": "Large Thumbnail URL",
+          "description": "The URL to the large thumbnail used for the item."
+        },
+        "banner": {
+          "type": "string",
+          "x-ms-summary": "Banner URL",
+          "description": "The URL to the banner used for the item."
+        },
+        "screenshots": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-ms-summary": "Screenshots",
+          "description": "An array of URLs to screenshots associated with the item."
+        },
+        "listed": {
+          "type": "boolean",
+          "x-ms-summary": "Listed in Marketplace",
+          "description": "Indicates if the item is listed in the marketplace."
+        },
+        "ownerFolder": {
+          "type": "string",
+          "x-ms-summary": "Owner Folder ID",
+          "description": "The ID of the folder in which the owner has stored the item."
+        },
+        "protected": {
+          "type": "boolean",
+          "x-ms-summary": "Protected",
+          "description": "Indicates if the item is protected from deletion."
+        },
+        "commentsEnabled": {
+          "type": "boolean",
+          "x-ms-summary": "Comments Enabled",
+          "description": "Indicates if comments are allowed on the item."
+        },
+        "numComments": {
+          "type": "integer",
+          "x-ms-summary": "Number of Comments",
+          "description": "The number of comments on the item."
+        },
+        "numRatings": {
+          "type": "integer",
+          "x-ms-summary": "Number of Ratings",
+          "description": "The number of ratings on the item."
+        },
+        "avgRating": {
+          "type": "number",
+          "x-ms-summary": "Average Rating",
+          "description": "The average rating of the item."
+        },
+        "numViews": {
+          "type": "integer",
+          "x-ms-summary": "Number of Views",
+          "description": "The number of views of the item."
+        },
+        "itemControl": {
+          "type": "string",
+          "x-ms-summary": "Item Control",
+          "description": "Indicates the user's control over the item.",
+          "enum": ["admin", "update"]
+        },
+        "contentStatus": {
+          "type": "string",
+          "x-ms-summary": "Content Status",
+          "description": "The content status of the item."
+        },
+        "scoreCompleteness": {
+          "type": "integer",
+          "x-ms-summary": "Completeness Score",
+          "description": "The completeness score of the item information."
+        },
+        "groupDesignations": {
+          "type": "string",
+          "x-ms-summary": "Group Designations",
+          "description": "Any special groups the item may belong to."
+        },
+        "apiToken1ExpirationDate": {
+          "type": "integer",
+          "x-ms-summary": "API Token 1 Expiration",
+          "description": "The expiration date of the first API token in UNIX time."
+        },
+        "apiToken2ExpirationDate": {
+          "type": "integer",
+          "x-ms-summary": "API Token 2 Expiration",
+          "description": "The expiration date of the second API token in UNIX time."
+        },
+        "lastViewed": {
+          "type": "integer",
+          "x-ms-summary": "Last Viewed Date",
+          "description": "The date/time the item was last accessed in UNIX format."
+        }
+      }
+    },
+    "ItemDataResponseDto": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "object",
+          "x-ms-summary": "Item Data",
+          "description": "The JSON contents of the data section of the item."
+        }
+      }
+    }
+  },
+  "tags": [],
+  "x-components": {}
+}
